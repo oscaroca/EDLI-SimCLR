@@ -1,3 +1,8 @@
+# Fork
+
+This is just a fork that allows to use the datasets from the EDLI paper to provide an easy way to generate the weights.
+
+
 # SimCLR
 PyTorch implementation of SimCLR: A Simple Framework for Contrastive Learning of Visual Representations by T. Chen et al.
 Including support for:
