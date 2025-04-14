@@ -32,11 +32,38 @@ def load_optimizer(args, model):
 
 
 def save_model(args, model, optimizer):
-    out = os.path.join(args.model_path, "checkpoint_{}.tar".format(args.current_epoch))
+    # Define the output paths for both .tar and .pth files
+    out_tar = os.path.join(args.model_path, "checkpoint_{}.tar".format(args.current_epoch))
+    out_pth = os.path.join(args.model_path, "resnet_model_{}.pth".format(args.current_epoch))
 
-    # To save a DataParallel model generically, save the model.module.state_dict().
-    # This way, you have the flexibility to load the model any way you want to any device you want.
+    # Save as .tar
     if isinstance(model, torch.nn.DataParallel):
-        torch.save(model.module.state_dict(), out)
+        torch.save({'model_state_dict': model.module.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'epoch': args.current_epoch}, out_tar)
     else:
-        torch.save(model.state_dict(), out)
+        torch.save({'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'epoch': args.current_epoch}, out_tar)
+
+    # Save as .pth (only the model's state_dict)
+    if isinstance(model, torch.nn.DataParallel):
+        state = {
+    
+        'model':  model.module.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'epoch': args.current_epoch,
+    }
+        torch.save(state, out_pth)
+        del state
+    else:
+        state = {
+      
+        'model': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'epoch': args.current_epoch,
+        }   
+        torch.save(state, out_pth)
+        del state
+        
+
